@@ -1,0 +1,17 @@
+# Dependências do NPM
+node_modules/
+
+# Arquivos de credenciais e segredos
+.env
+firebase-credentials.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
