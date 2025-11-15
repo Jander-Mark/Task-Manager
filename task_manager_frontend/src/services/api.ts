@@ -1,10 +1,9 @@
-// Atualizando a URL base da API para apontar para o endpoint público
 import axios from 'axios';
+import { auth } from '@/firebaseConfig'; // Importe o auth
 
-// Definindo a URL base da API
+// URL da sua API
 const API_URL = 'http://localhost:8000/api';
 
-// Criando uma instância do axios com configurações padrão
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -12,13 +11,24 @@ const api = axios.create({
   },
 });
 
-// Interceptor para adicionar o token de autenticação em todas as requisições
+// Interceptor (MODIFICADO para ser assíncrono)
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config) => { // <-- Agora é async
+    
+    // Pega o usuário atual do Firebase Auth
+    const user = auth.currentUser; 
+
+    if (user) {
+      try {
+        // Pega o Token ID do Firebase (isso atualiza o token se necessário)
+        const token = await user.getIdToken();
+        config.headers.Authorization = `Bearer ${token}`;
+      } catch (err) {
+        console.error("Erro ao obter token do Firebase:", err);
+        // Opcional: redirecionar para login ou tratar erro
+      }
     }
+    
     return config;
   },
   (error) => {
@@ -26,14 +36,14 @@ api.interceptors.request.use(
   }
 );
 
-// Interceptor para tratar erros de resposta (como token expirado)
+// Interceptor de resposta (MODIFICADO para deslogar do Firebase)
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => { // <-- Agora é async
     if (error.response && error.response.status === 401) {
       // Token expirado ou inválido
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      await auth.signOut(); // Desloga do Firebase
+      // Não precisa mais de window.location.href, o AuthProvider cuidará do redirecionamento
     }
     return Promise.reject(error);
   }

@@ -1,11 +1,10 @@
 const admin = require("firebase-admin");
 const path = require("path");
 
-// Caminho para o arquivo de credenciais
-// Idealmente, o caminho seria configurado via variável de ambiente
 const serviceAccountPath = path.join(__dirname, "..", "..", "firebase-credentials.json");
 
 let db;
+let auth; // <-- Adicione esta linha
 
 try {
   const serviceAccount = require(serviceAccountPath);
@@ -15,12 +14,13 @@ try {
   });
 
   db = admin.firestore();
-  console.log("Firebase Admin SDK inicializado com sucesso e conexão com Firestore estabelecida.");
+  auth = admin.auth(); // <-- Adicione esta linha
+  console.log("Firebase Admin SDK inicializado com sucesso. Firestore e Auth prontos.");
 
 } catch (error) {
   console.error("Erro ao inicializar o Firebase Admin SDK:", error);
-  // Em uma aplicação real, você pode querer lançar o erro ou lidar com ele de forma mais robusta
   db = null;
+  auth = null; // <-- Adicione esta linha
 }
 
 const getFirestoreDb = () => {
@@ -30,5 +30,12 @@ const getFirestoreDb = () => {
   return db;
 };
 
-module.exports = { admin, getFirestoreDb };
+// Nova função para obter o serviço de Autenticação
+const getFirebaseAuth = () => {
+  if (!auth) {
+    throw new Error("A conexão com o Firebase Auth não foi estabelecida.");
+  }
+  return auth;
+}
 
+module.exports = { admin, getFirestoreDb, getFirebaseAuth }; // <-- Exporte getFirebaseAuth

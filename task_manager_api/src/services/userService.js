@@ -1,6 +1,7 @@
 const { getFirestoreDb } = require("../config/firebase");
-const bcrypt = require("bcryptjs");
-const config = require("../config/config");
+// Não precisamos mais de bcrypt ou config aqui
+// const bcrypt = require("bcryptjs");
+// const config = require("../config/config");
 
 const db = getFirestoreDb();
 const usersCollection = db.collection("users");
@@ -20,52 +21,58 @@ const findUserByEmail = async (email) => {
 };
 
 /**
- * Cria um novo usuário no Firestore.
- * @param {object} userData - Dados do usuário (email, nome, senha).
- * @returns {Promise<object>} Os dados do usuário criado (sem a senha).
- * @throws {Error} Se o email já existir.
+ * Cria ou atualiza um novo documento de usuário no Firestore.
+ * A senha NÃO é armazenada aqui. O ID do documento será o UID do Firebase Auth.
+ * @param {string} uid - O UID vindo do Firebase Auth.
+ * @param {object} userData - Dados do usuário (email, nome).
+ * @returns {Promise<object>} Os dados do usuário criado.
  */
-const createUser = async (userData) => {
-  const { email, nome, senha } = userData;
+const createUser = async (uid, userData) => {
+  const { email, nome } = userData;
 
-  // Verifica se o usuário já existe
-  const existingUser = await findUserByEmail(email);
-  if (existingUser) {
-    throw new Error("Email já registrado");
-  }
+  // REMOVEMOS A VERIFICAÇÃO DE EMAIL EXISTENTE QUE CAUSAVA O CONFLITO (409)
+  // const existingUser = await findUserByEmail(email);
+  // if (existingUser) {
+  //   throw new Error("Email já registrado");
+  // }
 
-  // Faz o hash da senha
-  const hashedPassword = await bcrypt.hash(senha, config.bcryptSaltRounds);
+  // Usa o UID do Auth como ID do documento
+  const newUserRef = usersCollection.doc(uid); 
 
-  // Adiciona o usuário ao Firestore
-  const newUserRef = await usersCollection.add({
+  const newUserProfile = {
     email,
     nome,
-     // Armazena o hash da senha
     createdAt: new Date()
-  });
+  };
+  
+  // Usa .set() em vez de .add()
+  // Isso irá CRIAR o documento se ele não existir,
+  // ou ATUALIZAR se ele já existir (mas a chamada de criação de perfil falhou antes).
+  // Isso torna a rota segura contra falhas parciais.
+  await newUserRef.set(newUserProfile, { merge: true });
 
-  // Retorna os dados do usuário sem a senha
+  // Retorna os dados do usuário
   return {
-    id: newUserRef.id,
+    id: uid,
     email,
     nome
   };
 };
 
 /**
- * Encontra um usuário pelo ID.
- * @param {string} userId - O ID do usuário.
- * @returns {Promise<object|null>} Os dados do usuário (sem a senha), ou null se não encontrado.
+ * Encontra um usuário pelo seu UID do Firebase Auth.
+ * @param {string} userId - O UID do usuário.
+ * @returns {Promise<object|null>} Os dados do usuário, ou null se não encontrado.
  */
 const findUserById = async (userId) => {
+    // Busca o documento usando o UID como ID
     const userDoc = await usersCollection.doc(userId).get();
     if (!userDoc.exists) {
         return null;
     }
     const userData = userDoc.data();
-    // Garante que o hash da senha não seja retornado
-    delete userData.hashedPassword;
+    // Garante que o hash da senha não seja retornado (embora não deva existir mais)
+    delete userData.hashedPassword; 
     return { id: userDoc.id, ...userData };
 };
 
@@ -75,4 +82,3 @@ module.exports = {
   createUser,
   findUserById
 };
-

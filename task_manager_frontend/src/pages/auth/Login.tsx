@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; // Removido o useState
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -14,23 +14,46 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const Login: React.FC = () => {
-  const { login, error, clearError, loading } = useAuth();
+  // Pegue 'message' e 'sendPasswordReset' do contexto
+  const { login, error, message, clearError, loading, sendPasswordReset } = useAuth();
   const navigate = useNavigate();
+  
+  // Removido o useState de resetMessage
   
   const {
     register,
     handleSubmit,
+    getValues, // Para pegar o email para o reset
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    // A função login no AuthContext já limpa 'message' e 'error'
     try {
       await login(data.email, data.password);
       navigate('/dashboard');
     } catch (err) {
-      // Erro já é tratado no contexto de autenticação
+      // Erro já é tratado no contexto
+    }
+  };
+
+  // Função de reset simplificada
+  const handlePasswordReset = async () => {
+    clearError(); // Limpa erro/mensagem anterior
+    const email = getValues("email"); // Pega o email do formulário
+    
+    if (!email) {
+      alert("Por favor, digite seu email no campo 'Email' primeiro.");
+      return;
+    }
+
+    try {
+      await sendPasswordReset(email);
+      // Sucesso! O AuthContext vai definir a 'message'
+    } catch (err) {
+      // Falha! O AuthContext vai definir o 'error'
     }
   };
 
@@ -47,6 +70,7 @@ const Login: React.FC = () => {
           </p>
         </div>
         
+        {/* Exibe erro de login */}
         {error && (
           <div className="rounded-md bg-red-50 p-4">
             <div className="flex">
@@ -70,6 +94,17 @@ const Login: React.FC = () => {
                     </svg>
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Exibe mensagem de sucesso (verde) */}
+        {message && (
+           <div className="rounded-md bg-green-50 p-4">
+            <div className="flex">
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-green-800">{message}</h3>
               </div>
             </div>
           </div>
@@ -110,13 +145,27 @@ const Login: React.FC = () => {
             </div>
           </div>
 
+          {/* Link de Esqueci a senha */}
+          <div className="flex items-center justify-end">
+            <div className="text-sm">
+              <button
+                type="button"
+                onClick={handlePasswordReset}
+                disabled={loading}
+                className="font-medium text-blue-600 hover:text-blue-500 disabled:opacity-50"
+              >
+                Esqueceu a senha?
+              </button>
+            </div>
+          </div>
+
           <div>
             <button
               type="submit"
               disabled={loading}
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300"
             >
-              {loading ? 'Entrando...' : 'Entrar'}
+              {loading ? 'Carregando...' : 'Entrar'}
             </button>
           </div>
         </form>
