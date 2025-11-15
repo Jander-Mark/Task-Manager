@@ -6,22 +6,24 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 // Esquema de validação com Zod
-const registerSchema = z.object({
-  name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
-  confirmPassword: z.string().min(6, 'A confirmação de senha deve ter pelo menos 6 caracteres'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "As senhas não coincidem",
-  path: ["confirmPassword"],
-});
+const registerSchema = z
+  .object({
+    name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
+    email: z.string().email('Email inválido'),
+    password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+    confirmPassword: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'As senhas não coincidem',
+    path: ['confirmPassword'], // Onde o erro será exibido
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 const Register: React.FC = () => {
-  const { register: registerUser, error, clearError, loading } = useAuth();
+  const { register: authRegister, error, clearError, loading } = useAuth();
   const navigate = useNavigate();
-  
+
   const {
     register,
     handleSubmit,
@@ -32,38 +34,44 @@ const Register: React.FC = () => {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      await registerUser(data.name, data.email, data.password);
+      await authRegister(data.name, data.email, data.password);
       navigate('/dashboard');
     } catch (err) {
-      // Erro já é tratado no contexto de autenticação
+      // Erro já é tratado no contexto
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-md">
+    // **** ALTERAÇÃO 1: Div externo com a imagem de fundo ****
+    <div className="flex min-h-screen items-center justify-center bg-cover bg-center bg-[url('/auth-bg.jpg')]">
+      
+      {/* **** ALTERAÇÃO 2: Card com efeito fosco/transparente **** */}
+      <div className="w-full max-w-md space-y-8 rounded-lg bg-black/40 p-8 shadow-2xl backdrop-blur-md border border-gray-100/20">
+        
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">Criar conta</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Ou{' '}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
-              entrar com uma conta existente
+          {/* **** ALTERAÇÃO 3: Cores do texto **** */}
+          <h2 className="text-3xl font-extrabold text-white">Criar conta</h2>
+          <p className="mt-2 text-sm text-gray-200">
+            Já tem uma?{' '}
+            <Link to="/login" className="font-medium text-blue-300 hover:text-blue-200">
+              Faça login
             </Link>
           </p>
         </div>
-        
+
         {error && (
-          <div className="rounded-md bg-red-50 p-4">
+          // **** ALTERAÇÃO 3: Cores do Alerta ****
+          <div className="rounded-md bg-red-900/50 p-4 border border-red-300/30">
             <div className="flex">
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                <h3 className="text-sm font-medium text-red-200">{error}</h3>
               </div>
               <div className="ml-auto pl-3">
                 <div className="-mx-1.5 -my-1.5">
                   <button
                     type="button"
                     onClick={clearError}
-                    className="inline-flex rounded-md bg-red-50 p-1.5 text-red-500 hover:bg-red-100"
+                    className="inline-flex rounded-md bg-red-900/10 p-1.5 text-red-300 hover:bg-red-900/50"
                   >
                     <span className="sr-only">Fechar</span>
                     <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -81,25 +89,27 @@ const Register: React.FC = () => {
         )}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4 rounded-md shadow-sm">
+          <div className="space-y-4 rounded-md">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              {/* **** ALTERAÇÃO 3: Cores do Label **** */}
+              <label htmlFor="name" className="block text-sm font-medium text-gray-200">
                 Nome
               </label>
+              {/* **** ALTERAÇÃO 4: Estilo do Input **** */}
               <input
                 id="name"
                 type="text"
                 autoComplete="name"
                 {...register('name')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border border-gray-300/50 bg-white/20 px-3 py-2 text-white shadow-sm placeholder:text-gray-300 focus:border-blue-300 focus:outline-none focus:ring-blue-300 sm:text-sm"
               />
               {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                <p className="mt-1 text-sm text-red-300">{errors.name.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-200">
                 Email
               </label>
               <input
@@ -107,15 +117,15 @@ const Register: React.FC = () => {
                 type="email"
                 autoComplete="email"
                 {...register('email')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border border-gray-300/50 bg-white/20 px-3 py-2 text-white shadow-sm placeholder:text-gray-300 focus:border-blue-300 focus:outline-none focus:ring-blue-300 sm:text-sm"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                <p className="mt-1 text-sm text-red-300">{errors.email.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-200">
                 Senha
               </label>
               <input
@@ -123,15 +133,15 @@ const Register: React.FC = () => {
                 type="password"
                 autoComplete="new-password"
                 {...register('password')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border border-gray-300/50 bg-white/20 px-3 py-2 text-white shadow-sm placeholder:text-gray-300 focus:border-blue-300 focus:outline-none focus:ring-blue-300 sm:text-sm"
               />
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                <p className="mt-1 text-sm text-red-300">{errors.password.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-200">
                 Confirmar Senha
               </label>
               <input
@@ -139,10 +149,10 @@ const Register: React.FC = () => {
                 type="password"
                 autoComplete="new-password"
                 {...register('confirmPassword')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border border-gray-300/50 bg-white/20 px-3 py-2 text-white shadow-sm placeholder:text-gray-300 focus:border-blue-300 focus:outline-none focus:ring-blue-300 sm:text-sm"
               />
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+                <p className="mt-1 text-sm text-red-300">{errors.confirmPassword.message}</p>
               )}
             </div>
           </div>
@@ -153,7 +163,7 @@ const Register: React.FC = () => {
               disabled={loading}
               className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300"
             >
-              {loading ? 'Registrando...' : 'Registrar'}
+              {loading ? 'Criando conta...' : 'Criar conta'}
             </button>
           </div>
         </form>

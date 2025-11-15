@@ -1,4 +1,4 @@
-import React from 'react'; // Removido o useState
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -14,23 +14,19 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const Login: React.FC = () => {
-  // Pegue 'message' e 'sendPasswordReset' do contexto
   const { login, error, message, clearError, loading, sendPasswordReset } = useAuth();
   const navigate = useNavigate();
-  
-  // Removido o useState de resetMessage
   
   const {
     register,
     handleSubmit,
-    getValues, // Para pegar o email para o reset
+    getValues, 
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    // A função login no AuthContext já limpa 'message' e 'error'
     try {
       await login(data.email, data.password);
       navigate('/dashboard');
@@ -39,10 +35,9 @@ const Login: React.FC = () => {
     }
   };
 
-  // Função de reset simplificada
   const handlePasswordReset = async () => {
-    clearError(); // Limpa erro/mensagem anterior
-    const email = getValues("email"); // Pega o email do formulário
+    clearError(); 
+    const email = getValues("email"); 
     
     if (!email) {
       alert("Por favor, digite seu email no campo 'Email' primeiro.");
@@ -51,38 +46,42 @@ const Login: React.FC = () => {
 
     try {
       await sendPasswordReset(email);
-      // Sucesso! O AuthContext vai definir a 'message'
     } catch (err) {
       // Falha! O AuthContext vai definir o 'error'
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-md">
+    // **** ALTERAÇÃO 1: Div externo com a imagem de fundo ****
+    <div className="flex min-h-screen items-center justify-center bg-cover bg-center bg-[url('/auth-bg.jpg')]">
+      
+      {/* **** ALTERAÇÃO 2: Card com efeito fosco/transparente **** */}
+      <div className="w-full max-w-md space-y-8 rounded-lg bg-black/40 p-8 shadow-2xl backdrop-blur-md border border-gray-100/20">
+        
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">Entrar</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          {/* **** ALTERAÇÃO 3: Cores do texto **** */}
+          <h2 className="text-3xl font-extrabold text-white">Entrar</h2>
+          <p className="mt-2 text-sm text-gray-200">
             Ou{' '}
-            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/register" className="font-medium text-blue-300 hover:text-blue-200">
               criar uma nova conta
             </Link>
           </p>
         </div>
         
-        {/* Exibe erro de login */}
         {error && (
-          <div className="rounded-md bg-red-50 p-4">
+          // **** ALTERAÇÃO 3: Cores do Alerta ****
+          <div className="rounded-md bg-red-900/50 p-4 border border-red-300/30">
             <div className="flex">
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                <h3 className="text-sm font-medium text-red-200">{error}</h3>
               </div>
               <div className="ml-auto pl-3">
                 <div className="-mx-1.5 -my-1.5">
                   <button
                     type="button"
                     onClick={clearError}
-                    className="inline-flex rounded-md bg-red-50 p-1.5 text-red-500 hover:bg-red-100"
+                    className="inline-flex rounded-md bg-red-900/10 p-1.5 text-red-300 hover:bg-red-900/50"
                   >
                     <span className="sr-only">Fechar</span>
                     <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -99,37 +98,39 @@ const Login: React.FC = () => {
           </div>
         )}
 
-        {/* Exibe mensagem de sucesso (verde) */}
         {message && (
-           <div className="rounded-md bg-green-50 p-4">
+          // **** ALTERAÇÃO 3: Cores do Alerta ****
+           <div className="rounded-md bg-green-900/50 p-4 border border-green-300/30">
             <div className="flex">
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-green-800">{message}</h3>
+                <h3 className="text-sm font-medium text-green-200">{message}</h3>
               </div>
             </div>
           </div>
         )}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4 rounded-md shadow-sm">
+          <div className="space-y-4 rounded-md">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              {/* **** ALTERAÇÃO 3: Cores do Label **** */}
+              <label htmlFor="email" className="block text-sm font-medium text-gray-200">
                 Email
               </label>
+              {/* **** ALTERAÇÃO 4: Estilo do Input **** */}
               <input
                 id="email"
                 type="email"
                 autoComplete="email"
                 {...register('email')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border border-gray-300/50 bg-white/20 px-3 py-2 text-white shadow-sm placeholder:text-gray-300 focus:border-blue-300 focus:outline-none focus:ring-blue-300 sm:text-sm"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                <p className="mt-1 text-sm text-red-300">{errors.email.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-200">
                 Senha
               </label>
               <input
@@ -137,22 +138,21 @@ const Login: React.FC = () => {
                 type="password"
                 autoComplete="current-password"
                 {...register('password')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border border-gray-300/50 bg-white/20 px-3 py-2 text-white shadow-sm placeholder:text-gray-300 focus:border-blue-300 focus:outline-none focus:ring-blue-300 sm:text-sm"
               />
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                <p className="mt-1 text-sm text-red-300">{errors.password.message}</p>
               )}
             </div>
           </div>
 
-          {/* Link de Esqueci a senha */}
           <div className="flex items-center justify-end">
             <div className="text-sm">
               <button
                 type="button"
                 onClick={handlePasswordReset}
                 disabled={loading}
-                className="font-medium text-blue-600 hover:text-blue-500 disabled:opacity-50"
+                className="font-medium text-blue-300 hover:text-blue-200 disabled:opacity-50"
               >
                 Esqueceu a senha?
               </button>
