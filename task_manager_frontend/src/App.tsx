@@ -6,6 +6,7 @@ import Register from './pages/auth/Register';
 import Dashboard from './pages/dashboard/Dashboard';
 import TaskList from './pages/tasks/TaskList';
 import CategoryList from './pages/categories/CategoryList';
+import { AppLayout } from './components/AppLayout'; // <-- Importar o Layout
 
 // Componente para rotas protegidas
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -23,7 +24,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
+  // Envolve as rotas protegidas com o AppLayout
+  return <AppLayout>{children}</AppLayout>;
 };
 
 // Componente para rotas públicas (redireciona para dashboard se já estiver autenticado)
@@ -68,7 +70,7 @@ const App: React.FC = () => {
             }
           />
 
-          {/* Rotas protegidas */}
+          {/* Rotas protegidas (agora usam o AppLayout) */}
           <Route
             path="/dashboard"
             element={
