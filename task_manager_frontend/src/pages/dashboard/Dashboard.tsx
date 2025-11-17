@@ -56,22 +56,6 @@ const formatFirestoreTimestamp = (timestamp: FirestoreTimestamp | string | Date 
   });
 };
 
-const getTimestampMillis = (timestamp: FirestoreTimestamp | string | Date | null): number => {
-    if (!timestamp) return 0;
-    let date: Date;
-    if (typeof timestamp === 'string') {
-      date = new Date(timestamp);
-    } else if (timestamp instanceof Date) {
-      date = timestamp;
-    } else if (typeof timestamp === 'object' && timestamp !== null && '_seconds' in timestamp && typeof (timestamp as any)._seconds === 'number') {
-      const ts = timestamp as FirestoreTimestamp;
-      date = new Date(ts._seconds * 1000 + (ts._nanoseconds || 0) / 1000000);
-    } else {
-      return 0;
-    }
-    return isNaN(date.getTime()) ? 0 : date.getTime();
-}
-
 // *** 1. NOVA FUNÇÃO HELPER ***
 // Converte a data de vencimento (string YYYY-MM-DD) para milissegundos
 const getDueDateMillis = (dateString: string | null): number | null => {
@@ -105,19 +89,7 @@ const isTaskOverdue = (task: Task): boolean => {
   }
 };
 
-const wasCompletedLate = (task: Task): boolean => {
-  if (task.status === 'pendente' || !task.data_vencimento || !task.updatedAt) {
-    return false;
-  }
-  try {
-    const completionDate = new Date(getTimestampMillis(task.updatedAt));
-    completionDate.setHours(0, 0, 0, 0); 
-    const dueDate = new Date(`${task.data_vencimento}T00:00:00`);
-    return completionDate > dueDate;
-  } catch (e) {
-    return false;
-  }
-};
+
 
 
 const Dashboard: React.FC = () => {
