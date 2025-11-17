@@ -48,7 +48,7 @@ const AppNavbar: React.FC = () => {
           <div className="flex">
             {/* Logo ou Nome do App (Opcional) */}
             <div className="flex flex-shrink-0 items-center mr-4">
-               <span className="font-bold text-xl text-blue-600 dark:text-blue-400">TM</span>
+               <span className="font-bold text-xl text-blue-600 dark:text-blue-400">Gerenciador de Tarefas</span>
             </div>
             
             {/* Links Desktop (Somente visível em telas sm ou maiores) */}
