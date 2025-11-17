@@ -4,9 +4,6 @@
 ![Badge da Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)
 
 Um aplicativo full-stack de gerenciamento de tarefas, construído com um front-end moderno em React (Vite + TypeScript) e uma API robusta em Node.js (Fastify), utilizando o Firebase para autenticação e banco de dados.
-![Uploading Dashboard.png…]()
-
-![Imagem do Dashboard do Projeto]<blockquote class="imgur-embed-pub" lang="en" data-id="a/XiZxJzl"  ><a href="//imgur.com/a/XiZxJzl">dashboard</a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
 
 ## 📋 Funcionalidades Principais
 
