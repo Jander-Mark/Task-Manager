@@ -42,19 +42,19 @@ A estrutura de alto nível do projeto é um monorepo simples, separando claramen
 
 ```
 /
-├── task_manager_api/     # (Back-end API Node.js/Fastify)
-│   ├── src/              # Código-fonte da API
-│   ├── firebase-credentials.json # (Chave de serviço - NÃO SUBIR NO GIT)
+├── task_manager_api/       # (Back-end API Node.js/Fastify)
+│   ├── src/                # Código-fonte da API
+│   ├── firebase-credentials.json # (Chave de serviço)
 │   ├── package.json
-│   └── README.md         # Documentação específica da API
+│   └── README.md           # Documentação específica da API
 │
 ├── task_manager_frontend/  # (Front-end App React/Vite)
-│   ├── public/           # Imagens de fundo e assets estáticos
-│   ├── src/              # Código-fonte do React
+│   ├── public/             # Imagens de fundo e assets estáticos
+│   ├── src/                # Código-fonte do React
 │   ├── package.json
-│   └── README.md         # Documentação específica do Front-end
+│   └── README.md           # Documentação específica do Front-end
 │
-└── README.md             # (Este README)
+└── README.md               # (Este README)
 ```
 
 ## 🚀 Como Executar o Projeto
