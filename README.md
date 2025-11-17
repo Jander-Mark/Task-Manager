@@ -3,7 +3,7 @@
 ![Badge do Projeto](https://img.shields.io/badge/status-conclu%C3%ADdo-brightgreen)
 ![Badge da Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)
 
-Um aplicativo full-stack de gerenciamento de tarefas, similar ao Trello, construído com um front-end moderno em React (Vite + TypeScript) e uma API robusta em Node.js (Fastify), utilizando o Firebase para autenticação e banco de dados.
+Um aplicativo full-stack de gerenciamento de tarefas, construído com um front-end moderno em React (Vite + TypeScript) e uma API robusta em Node.js (Fastify), utilizando o Firebase para autenticação e banco de dados.
 
 ![Imagem do Dashboard do Projeto](httpsimage_7485c8.jpg)
 
@@ -15,7 +15,7 @@ Um aplicativo full-stack de gerenciamento de tarefas, similar ao Trello, constru
 * **Dashboard Interativo:** Visão geral com contagem de tarefas e lista de tarefas mais urgentes (baseado na data de vencimento).
 * **Sistema de Temas:**
     * **Modo Claro / Escuro:** Alternância de tema claro (light) e escuro (dark) com persistência.
-    * **Temas de Fundo:** 5 opções de fundos de imagem (estilo Trello) para personalizar a experiência.
+    * **Temas de Fundo:** 5 opções de fundos de imagem para personalizar a experiência.
 * **Interface Moderna:** Construído com **Tailwind CSS** e componentes **shadcn/ui**.
 * **Validação de Dados:** Validação de formulários no front-end (com Zod) e no back-end.
 
