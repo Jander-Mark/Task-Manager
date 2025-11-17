@@ -5,7 +5,7 @@
 
 Um aplicativo full-stack de gerenciamento de tarefas, construído com um front-end moderno em React (Vite + TypeScript) e uma API robusta em Node.js (Fastify), utilizando o Firebase para autenticação e banco de dados.
 
-![Imagem do Dashboard do Projeto](https://imgur.com/a/XiZxJzl)
+![Imagem do Dashboard do Projeto](https://imgur.com/744zpiM)
 
 ## 📋 Funcionalidades Principais
 
