@@ -5,7 +5,8 @@
 
 Um aplicativo full-stack de gerenciamento de tarefas, construído com um front-end moderno em React (Vite + TypeScript) e uma API robusta em Node.js (Fastify), utilizando o Firebase para autenticação e banco de dados.
 
-## 🔗 Links do Projeto: https://task-manager-97.netlify.app
+## 🔗 Links do Projeto:
+https://task-manager-97.netlify.app
 
 ## 📋 Funcionalidades Principais
 
